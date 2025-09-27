@@ -31,7 +31,7 @@ module.exports.registerUser = async (req, res, next) => {
     res.status(201).json({ token, user });
 }
 
-// create login user
+// create login user controller
 module.exports.loginUser = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -54,5 +54,12 @@ module.exports.loginUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
 
+    res.cookie('token', token);
+
     res.status(201).json({ token, user });
+}
+
+// create user profile controller
+module.exports.getUserProfile = async (req, res, next) => {
+    res.status(200).json(req.user);
 }
