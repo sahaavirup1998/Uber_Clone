@@ -40,7 +40,7 @@ const CaptainSignup = () => {
           <input value={email} onChange={(e) => setEmail(e.target.value)} className='bg-[#eeeeee] mb-6 rounded px-4 py-2 border w-full text-lg placeholder:text-base' type='email' required placeholder='email@example.com' />
           <h3 className='text-lg font-medium mb-2'>Enter Password</h3>
           <input value={password} onChange={(e) => setPassword(e.target.value)} className='bg-[#eeeeee] mb-6 rounded px-4 py-2 border w-full text-lg placeholder:text-base' type='password' required placeholder='password' />
-          <button className='bg-[#111111] text-white font-bold mb-3 rounded px-4 py-2 w-full text-lg placeholder:text-base' type='submit'>Login</button>
+          <button className='bg-[#111111] text-white font-bold mb-3 rounded px-4 py-2 w-full text-lg placeholder:text-base' type='submit'>Create Account</button>
         </form>
         <p className='text-center'>Already have an account? <Link className='text-blue-600 font-semibold' to="/captain-login">Login</Link></p>
       </div>
