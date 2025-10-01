@@ -21,11 +21,10 @@ const UserLogin = () => {
     };
 
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData);
-    console.log("Full response:", response);
-    if(response.status === 201){
+    if(response.status === 201 || response.status === 200){
       const data = response.data;
-      console.log("Login response:", data);
       setUser(data.user);
+      localStorage.setItem('token', data.token);
       navigate('/home');
     }
 
