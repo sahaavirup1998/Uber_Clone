@@ -23,7 +23,8 @@ const CaptainLogout = () => {
 
   return (
     <div>
-      
+        <h1>Goodbye!</h1>
+        <p>You have been logged out successfully.</p>
     </div>
   )
 }
