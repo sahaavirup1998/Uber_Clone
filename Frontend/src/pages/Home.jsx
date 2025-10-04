@@ -79,7 +79,8 @@ const Home = () => {
           <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanelOpen={setVehiclePanelOpen} />
         </div>
       </div>
-      <div ref={vehiclePanelRef} className='fixed w-full z-10 bottom-0 px-3 py-8 bg-white translate-y-full'>
+      <div ref={vehiclePanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-14 py-10 bg-white translate-y-full'>
+        <h5 onClick={() => setVehiclePanelOpen(false)} className='absolute w-[93%] p-1 text-center top-0'><i className='text-3xl text-gray-300 ri-arrow-down-wide-line'></i></h5>
         <h3 className='font-semibold text-2xl mb-3'>Choose a ride</h3>
         <div className='w-full border-2 active:border-black rounded-xl flex items-center justify-between p-3 mb-2'>
           <img className='h-12' src='https://www.pngplay.com/wp-content/uploads/8/Uber-PNG-Photos.png' alt='uber car logo' />
