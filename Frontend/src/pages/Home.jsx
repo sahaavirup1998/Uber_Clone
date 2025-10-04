@@ -4,15 +4,21 @@ import gsap from 'gsap';
 import 'remixicon/fonts/remixicon.css'
 import LocationSearchPanel from '../components/LocationSearchPanel';
 import VehiclePanel from '../components/VehiclePanel';
+import ConfirmedRide from '../components/ConfirmedRide';
+import LookingForDriver from '../components/LookingForDriver';
 
 const Home = () => {
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
   const [panelOpen, setPanelOpen] = useState(false);
+  const [vehiclePanelOpen, setVehiclePanelOpen] = useState(false);
+  const [confirmRidePanel, setConfirmRidePanel] = useState(false);
+  const [lookingForDriverPanel, setLookingForDriverPanel] = useState(false);
   const panelRef = useRef(null);
   const panelClose = useRef(null);
   const vehiclePanelRef = useRef(null);
-  const [vehiclePanelOpen, setVehiclePanelOpen] = useState(false);
+  const confirmedRidePanelRef = useRef(null);
+  const lookingForDriverPanelRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,6 +66,38 @@ const Home = () => {
     }
   }, [vehiclePanelOpen]);
 
+    useGSAP(function() {
+    if(confirmRidePanel) {
+      gsap.to(confirmedRidePanelRef.current, {
+        transform: 'translateY(0%)',
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+    } else {
+      gsap.to(confirmedRidePanelRef.current, {
+        transform: 'translateY(100%)',
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+    }
+  }, [confirmRidePanel]);
+
+  useGSAP(function() {
+    if(lookingForDriverPanel) {
+      gsap.to(lookingForDriverPanelRef.current, {
+        transform: 'translateY(0%)',
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+    } else {
+      gsap.to(lookingForDriverPanelRef.current, {
+        transform: 'translateY(100%)',
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+    }
+  }, [lookingForDriverPanel]);
+
   return (
     <div className='relative h-screen overflow-hidden'>
       <img className='w-16 absolute top-5 left-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="Uber Logo" />
@@ -80,8 +118,14 @@ const Home = () => {
           <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanelOpen={setVehiclePanelOpen} />
         </div>
       </div>
-      <div ref={vehiclePanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-14 py-10 bg-white translate-y-full'>
-        <VehiclePanel setVehiclePanelOpen={setVehiclePanelOpen} />
+      <div ref={vehiclePanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-12 py-10 bg-white translate-y-full'>
+        <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanelOpen={setVehiclePanelOpen} />
+      </div>
+      <div ref={confirmedRidePanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-12 py-6 bg-white translate-y-full'>
+        <ConfirmedRide setConfirmRidePanel={setConfirmRidePanel} setLookingForDriverPanel={setLookingForDriverPanel} />
+      </div>
+      <div ref={lookingForDriverPanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-12 py-6 bg-white translate-y-full'>
+        <LookingForDriver />
       </div>
     </div>
   )
