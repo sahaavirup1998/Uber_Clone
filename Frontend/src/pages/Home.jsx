@@ -6,6 +6,7 @@ import LocationSearchPanel from '../components/LocationSearchPanel';
 import VehiclePanel from '../components/VehiclePanel';
 import ConfirmedRide from '../components/ConfirmedRide';
 import LookingForDriver from '../components/LookingForDriver';
+import WaitingForDriver from '../components/WaitingForDriver';
 
 const Home = () => {
   const [pickup, setPickup] = useState('');
@@ -14,11 +15,13 @@ const Home = () => {
   const [vehiclePanelOpen, setVehiclePanelOpen] = useState(false);
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
   const [lookingForDriverPanel, setLookingForDriverPanel] = useState(false);
+  const [waitingForDriverPanel, setWaitingForDriverPanel] = useState(false);
   const panelRef = useRef(null);
   const panelClose = useRef(null);
   const vehiclePanelRef = useRef(null);
   const confirmedRidePanelRef = useRef(null);
   const lookingForDriverPanelRef = useRef(null);
+  const waitingForDriverPanelRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -98,6 +101,22 @@ const Home = () => {
     }
   }, [lookingForDriverPanel]);
 
+  useGSAP(function() {
+    if(waitingForDriverPanel) {
+      gsap.to(waitingForDriverPanelRef.current, {
+        transform: 'translateY(0%)',
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+    } else {
+      gsap.to(waitingForDriverPanelRef.current, {
+        transform: 'translateY(100%)',
+        duration: 0.5,
+        ease: 'power3.out'
+      });
+    }
+  }, [waitingForDriverPanel]);
+
   return (
     <div className='relative h-screen overflow-hidden'>
       <img className='w-16 absolute top-5 left-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="Uber Logo" />
@@ -125,7 +144,10 @@ const Home = () => {
         <ConfirmedRide setConfirmRidePanel={setConfirmRidePanel} setLookingForDriverPanel={setLookingForDriverPanel} />
       </div>
       <div ref={lookingForDriverPanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-12 py-6 bg-white translate-y-full'>
-        <LookingForDriver />
+        <LookingForDriver setLookingForDriverPanel={setLookingForDriverPanel} />
+      </div>
+      <div ref={waitingForDriverPanelRef} className='fixed w-full z-10 bottom-0 px-3 pt-12 py-6 bg-white'>
+        <WaitingForDriver waitingForDriverPanel={waitingForDriverPanel} />
       </div>
     </div>
   )

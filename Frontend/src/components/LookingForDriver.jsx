@@ -1,9 +1,9 @@
 import React from 'react'
 
-const LookingForDriver = () => {
+const LookingForDriver = (props) => {
   return (
     <div>
-      <h5 onClick={() => props.setVehiclePanelOpen(false)} className='absolute w-[93%] p-1 text-center top-0'><i className='text-3xl text-gray-300 ri-arrow-down-wide-line'></i></h5>
+      <h5 onClick={() => props.setLookingForDriverPanel(false)} className='absolute w-[93%] p-1 text-center top-0'><i className='text-3xl text-gray-300 ri-arrow-down-wide-line'></i></h5>
       <h3 className='font-semibold text-2xl mb-3'>Looking for Driver</h3>
       <div className='flex gap-2 justify-between items-center flex-col'>
         <img className='h-20' src='https://www.pngplay.com/wp-content/uploads/8/Uber-PNG-Photos.png' alt='uber car logo' />
