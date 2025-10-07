@@ -6,19 +6,19 @@ module.exports.getAddressCoordinate = async (address) => {
 
 	try {
         const response = await axios.get(url);
-        const data = response.data;
-
-        if (data.status === 'OK') {
+ 
+        if (response.data.status === 'OK') {
             const location = data.results[0].geometry.location;
             return {
                 lat: location.lat,
                 lng: location.lng
             };
         } else {
-            throw new Error(`Geocoding failed: ${data.status}`);
+            throw new Error(`Unable to fetch coordinate`);
         }
     } catch (error) {
-        throw new Error(`Error fetching geocode: ${error.message}`);
+        console.error(error);
+        throw error;
     }
     
 };
