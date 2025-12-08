@@ -1,18 +1,34 @@
 const { validationResult } = require('express-validator');
 const mapService = require('../services/map.services.js');
 
-module.exports.getCoordinates = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+module.exports.getCoordinates = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { address } = req.query;
+
+  try {
+    const coordinates = await mapService.getAddressCoordinate(address);
+
+    if (coordinates) {
+      // ✅ Return only lat/lng
+      return res.status(200).json({
+        lat: coordinates.lat,
+        lng: coordinates.lng
+      });
+    } else {
+      return res.status(404).json({
+        message: `No coordinates found for address: ${address}`
+      });
     }
-    
-	const { address } = req.query;
-    try {
-		const coordinates = await mapService.getAddressCoordinate(address);
-		return res.status(200).json(coordinates);
-		
-	} catch (err) {
-		return res.status(404).json({ message: 'Failed to get coordinates' });
-	}
+
+  } catch (err) {
+    console.error('Error in getCoordinates controller:', err.message);
+    return res.status(500).json({
+      message: 'Failed to get coordinates',
+      error: err.message
+    });
+  }
 };
