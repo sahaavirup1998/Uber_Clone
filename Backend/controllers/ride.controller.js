@@ -28,6 +28,7 @@ module.exports.createRide = async (req, res) => {
                 distance: `${Number(ride.distance).toFixed(2)} km`,
                 time: `${hours} hr ${minutes} min`,
                 fare: `₹${Number(ride.fare).toFixed(2)}`,
+                otp: ride.otp,
                 status: ride.status
             }
         });
