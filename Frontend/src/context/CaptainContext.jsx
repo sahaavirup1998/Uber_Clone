@@ -17,7 +17,8 @@ const CaptainContext = ({children}) => {
         isLoading,
         setIsLoading,
         error,
-        setError
+        setError,
+        updateCaptain
     }
 
     return (

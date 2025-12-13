@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
@@ -7,6 +7,8 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+import { SocketContext } from "../context/SocketContext"
+import { UserDataContext } from "../context/UserContext";
 import axios from "axios";
 
 const Home = () => {
@@ -28,6 +30,13 @@ const Home = () => {
   const confirmedRidePanelRef = useRef(null);
   const lookingForDriverPanelRef = useRef(null);
   const waitingForDriverPanelRef = useRef(null);
+
+  const { user } = useContext(UserDataContext);
+  const { socket } = useContext(SocketContext);
+
+  useEffect(() => {
+    socket.emit('join', { userType: 'user', userId: user._id });
+  })
 
   const handlePickupChange = async (e) => {
     const value = e.target.value;
@@ -207,10 +216,6 @@ const Home = () => {
     setFare(response.data.fares);
     console.log("FARES", response.data.fares);
   }
-
-  useEffect(() => {
-  console.log("Fare state:", fare);
-}, [fare]);
 
   async function createRide() {
     const response = await axios.post(
