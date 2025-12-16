@@ -4,47 +4,74 @@ const captainModel = require('./models/captain.model');
 
 let io;
 
-// Function to initialize the socket.io server
+// Initialize socket.io server
 function initializeSocket(server) {
-    io = socketIo(server, {
-        cors: {
-            origin: '*', // Update this to your frontend's URL in production
-            methods: ['GET', 'POST']
+  io = socketIo(server, {
+    cors: {
+      origin: '*', // TODO: Replace with frontend URL in production
+      methods: ['GET', 'POST'],
+    },
+  });
+
+  io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.id}`);
+
+    // 🟢 Handle join event
+    socket.on('join', async (data) => {
+      try {
+        const { userId, userType } = data;
+        console.log(`User ${userId} joined as ${userType}`);
+
+        if (userType === 'user') {
+          await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
+        } else if (userType === 'captain') {
+          await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
         }
+      } catch (err) {
+        console.error('Error in join event:', err);
+        socket.emit('error', { message: 'Failed to join socket room' });
+      }
     });
 
-    io.on('connection', (socket) => {
-        console.log(`User connected: ${socket.id}`);
-        
-        socket.on('join', async (data) => {
-            const { userId, userType } = data;
+    // 🟡 Handle captain location updates
+    socket.on('update-location-captain', async (data) => {
+      try {
+        const { userId, location } = data;
 
-            console.log(`User ${userId} joined as ${userType}`);
-            
+        if (!location || !location.lat || !location.lng) {
+          return socket.emit('error', { message: 'Invalid location data' });
+        }
 
-            if (userType === 'user') {
-                await userModel.findByIdAndUpdate(userId,{socketId: socket.id});
-            } else if (userType === 'captain') {
-                await captainModel.findByIdAndUpdate(userId,{socketId: socket.id});
-            }
+        await captainModel.findByIdAndUpdate(userId, {
+          location: {
+            lat: location.lat,
+            lng: location.lng,
+          },
         });
 
-        socket.on('disconnect', () => {
-            console.log(`User disconnected: ${socket.id}`);
-        });
+      } catch (err) {
+        console.error('Error updating captain location:', err);
+        socket.emit('error', { message: 'Failed to update location' });
+      }
     });
+
+    // 🔴 Handle disconnect
+    socket.on('disconnect', () => {
+      console.log(`User disconnected: ${socket.id}`);
+    });
+  });
 }
 
-// Function to send a message to a specific socket ID
+// Function to send message to specific socket
 function sendMessageToSocketId(socketId, message) {
-    if (io) {
-        io.to(socketId).emit('message', message);
-    } else {
-        console.error('Socket.io is not initialized. Call initializeSocket first.');
-    }
+  if (io) {
+    io.to(socketId).emit('message', message);
+  } else {
+    console.error('Socket.io is not initialized. Call initializeSocket first.');
+  }
 }
 
 module.exports = {
-    initializeSocket,
-    sendMessageToSocketId
+  initializeSocket,
+  sendMessageToSocketId,
 };

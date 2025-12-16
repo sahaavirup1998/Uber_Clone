@@ -4,6 +4,8 @@ import { CaptainDataContext } from "../context/CaptainContext";
 const CaptainDetails = () => {
   const { captain } = useContext(CaptainDataContext);
 
+  console.log("Captain context data:", captain);
+
   return (
     <div>
       <div className="flex items-center justify-between p-4">

@@ -1,6 +1,7 @@
 const axios = require('axios');
 const http = require('http');
 const https = require('https');
+const captainModel = require('../models/captain.model');
 
 const axiosInstance = axios.create({
   timeout: 8000,
@@ -218,3 +219,15 @@ module.exports.fetchAddressSuggestions = async (query) => {
     category: item.class
   }));
 };
+
+module.exports.getCaptainInTheRadius = async (lat, lng, radius) => {
+  const captains = await captainModel.find({
+    location: {
+      $geoWithin: {
+        $centerSphere: [[lng, lat], radius / 6371] // radius in radians
+      }
+    }
+  });
+
+  return captains;
+}
