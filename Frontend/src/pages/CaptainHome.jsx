@@ -17,36 +17,35 @@ const CaptainHome = () => {
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
-    socket.emit('join', { userType: 'captain', userId: captain._id });
+  if (!captain || !captain._id) return; // Wait until captain data is available
 
-    const updateLocation = () => {
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
+  socket.emit('join', { userType: 'captain', userId: captain._id });
+  console.log("Captain joined socket room:", captain._id);
 
-          console.log({userId: captain._id,
-            location: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            }
-        });
-          
-
-          socket.emit('update-location-captain', {
-            userId: captain._id,
-            location: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            }
-          })
-        })
-      }
+  const updateLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const locationData = {
+          userId: captain._id,
+          location: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          },
+        };
+        console.log("Updating location:", locationData);
+        socket.emit('update-location-captain', locationData);
+      });
     }
+  };
 
-    const locationInterval = setInterval(updateLocation, 10000);
-    console.log('captain:', captain);
-    updateLocation();
-    // return () => clearInterval(locationInterval);
-  });
+  const locationInterval = setInterval(updateLocation, 10000);
+  updateLocation();
+
+  return () => {
+    clearInterval(locationInterval);
+    socket.emit('leave', { userType: 'captain', userId: captain._id });
+  };
+}, [captain?._id, socket]);
 
     useGSAP(function() {
     if(ridePopupPanel) {

@@ -35,8 +35,11 @@ const Home = () => {
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
+  if (user && user._id) {
     socket.emit('join', { userType: 'user', userId: user._id });
-  })
+    console.log("Joined socket room as user:", user._id);
+  }
+}, [user, socket]);
 
   const handlePickupChange = async (e) => {
     const value = e.target.value;
