@@ -1,6 +1,8 @@
+const { send } = require("process");
 const rideModel = require("../models/ride.model");
 const mapService = require("./map.services");
 const crypto = require("crypto");
+const { sendMessageToSocketId } = require("../socket");
 
 // 🔹 calculate fare for ALL vehicle types
 async function getFare(pickup, destination) {
@@ -120,10 +122,47 @@ module.exports.confirmRide = async (rideId, captain) => {
 
   const ride = await rideModel.findOne({
     _id: rideId,
-  }).populate('user');
+  }).populate('user').populate('captain').select('+otp');
 
   if (!ride) {
     throw new Error("Ride not found or already confirmed.");
   }
   return ride;
 };
+
+// 🔹 start ride by captain
+module.exports.startRide = async (rideId, otp, captain) => {
+  if (!rideId || !otp) {
+    throw new Error("Ride ID and OTP are required to start a ride.");
+  }
+
+  const ride = await rideModel.findOne({
+    _id: rideId,
+  }).populate('user').populate('captain').select('+otp');
+
+  if (!ride) {
+    throw new Error("Invalid ride ID, OTP, or ride not accepted yet.");
+  }
+
+  if(ride.status !== 'accepted') {
+    throw new Error("Ride not accepted yet.");
+  }
+
+  if (ride.otp !== otp) {
+    throw new Error("Invalid OTP provided.");
+  }
+
+  await rideModel.findOneAndUpdate({
+    _id: rideId},
+    {
+      status: 'ongoing',
+    }
+  )
+
+  sendMessageToSocketId(ride.user.socketId, {
+    event: 'ride-started',
+    data: ride
+  });
+  
+  return ride;
+}
