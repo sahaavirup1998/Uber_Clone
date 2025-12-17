@@ -7,12 +7,16 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SocketContext } from "../context/SocketContext";
 import { CaptainDataContext } from "../context/CaptainContext";
+import axios from "axios";
 
 const CaptainHome = () => {
-  const [ridePopupPanel, setRidePopupPanel] = useState(true);
+  const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
+  const [ride, setRide] = useState(null);
+
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
+
   const { captain } = useContext(CaptainDataContext);
   const { socket } = useContext(SocketContext);
 
@@ -49,7 +53,23 @@ const CaptainHome = () => {
 
   socket.on('new-ride', (data) => {
     console.log('New ride received:', data);
+    setRide(data);
+    setRidePopupPanel(true);
   });
+
+  async function confirmRide() {
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
+      rideId: ride._id,
+      captainId: captain._id,
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
+    });
+
+    setRidePopupPanel(false);
+    setConfirmRidePopupPanel(false);
+  }
 
   useGSAP(
     function () {
@@ -118,8 +138,10 @@ const CaptainHome = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
       >
         <RidePopup
+          ride = {ride}
           setRidePopupPanel={setRidePopupPanel}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
+          confirmRide={confirmRide}
         />
       </div>
       <div

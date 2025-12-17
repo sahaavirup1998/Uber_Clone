@@ -7,7 +7,7 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
-import { SocketContext } from "../context/SocketContext"
+import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
 import axios from "axios";
 
@@ -24,6 +24,8 @@ const Home = () => {
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
+  const [ride, setRide] = useState(null);
+
   const panelRef = useRef(null);
   const panelClose = useRef(null);
   const vehiclePanelRef = useRef(null);
@@ -35,11 +37,17 @@ const Home = () => {
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
-  if (user && user._id) {
-    socket.emit('join', { userType: 'user', userId: user._id });
-    console.log("Joined socket room as user:", user._id);
-  }
-}, [user, socket]);
+    if (user && user._id) {
+      socket.emit("join", { userType: "user", userId: user._id });
+      console.log("Joined socket room as user:", user._id);
+    }
+  }, [user, socket]);
+
+  socket.on('ride-confirmed', ride => {
+    setVehiclePanelOpen(false);
+    setWaitingForDriverPanel(true);
+    setRide(ride);
+  });
 
   const handlePickupChange = async (e) => {
     const value = e.target.value;
@@ -209,7 +217,7 @@ const Home = () => {
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
       {
-        params: { pickup, destination,vehicleType},
+        params: { pickup, destination, vehicleType },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -350,7 +358,12 @@ const Home = () => {
         ref={waitingForDriverPanelRef}
         className="fixed w-full z-10 bottom-0 px-3 pt-12 py-6 bg-white"
       >
-        <WaitingForDriver waitingForDriverPanel={waitingForDriverPanel} />
+        <WaitingForDriver 
+          waitingForDriverPanel={waitingForDriverPanel} 
+          ride={ride} 
+          setVehiclePanelOpen={setVehiclePanelOpen}
+          setWaitingForDriverPanel={setWaitingForDriverPanel}
+        />
       </div>
     </div>
   );

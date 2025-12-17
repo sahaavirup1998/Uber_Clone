@@ -7,8 +7,8 @@ const WaitingForDriver = (props) => {
       <div className='flex gap-2 justify-between items-center'>
         <img className='h-16' src='https://www.pngplay.com/wp-content/uploads/8/Uber-PNG-Photos.png' alt='uber car logo' />
         <div className='text-right'>
-          <h2 className='text-lg font-medium'>Driver</h2>
-          <h4 className='text-xl font-semibold -mt-1 -mb-1'>AP21 LD 4589</h4>
+          <h2 className='text-lg font-medium'>{props.ride?.captain?.name}</h2>
+          <h4 className='text-xl font-semibold -mt-1 -mb-1'>{props.ride?.vehicle?.plate}</h4>
           <p className='text-gray-600 text-sm'>Maruti Suzuki Swift Dezire</p>
         </div>
       </div>
