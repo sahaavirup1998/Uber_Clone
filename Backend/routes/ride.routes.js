@@ -64,4 +64,12 @@ router.get(
   rideController.startRide
 )
 
+router.post('/end-ride',
+  authMiddleware.authCaptain,
+  body('rideId')
+    .isString()
+    .withMessage('Invalid ride ID'),
+  rideController.endRide
+)
+
 module.exports = router;
